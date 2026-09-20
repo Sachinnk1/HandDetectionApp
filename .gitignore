@@ -1,0 +1,43 @@
+﻿# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# Node
+node_modules/
+**/node_modules/
+
+# Expo
+.expo/
+**/.expo/
+.expo-shared/
+**/.expo-shared/
+
+# React Native
+android/.gradle/
+android/.cxx/
+android/build/
+android/app/build/
+**/.cxx/
+**/android/.gradle/
+**/android/build/
+**/android/app/build/
+
+# iOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+*.apk
+*.aab
