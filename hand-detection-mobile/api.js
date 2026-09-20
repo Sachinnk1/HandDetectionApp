@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_URL = "https://handdetectionappbackend.onrender.com";
+export const BASE_URL = "https://handdetection-docker.onrender.com";
 
 const api = axios.create({ baseURL: BASE_URL, timeout: 60000 });
 
