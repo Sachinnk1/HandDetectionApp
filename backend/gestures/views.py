@@ -20,21 +20,29 @@ class GestureDetectionListCreateView(generics.ListCreateAPIView):
     serializer_class = GestureDetectionSerializer
 
 
-
 # Set True if your RIGHT hand is reported as LEFT
 FLIP_HANDS = False
+MAX_SIDE = 640  # downscale big uploads to save RAM/CPU
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'hand_landmarker.task')
 
-_landmarker = vision.HandLandmarker.create_from_options(
-    vision.HandLandmarkerOptions(
-        base_options=mp_python.BaseOptions(model_asset_path=MODEL_PATH),
-        running_mode=vision.RunningMode.IMAGE,
-        num_hands=1,
-        min_hand_detection_confidence=0.6,
-    )
-)
-_lock = threading.Lock()  # the dev server is multi-threaded
+_landmarker = None
+_lock = threading.Lock()
+
+
+def get_landmarker():
+    """Create the model on first use, not at import time. Call with _lock held."""
+    global _landmarker
+    if _landmarker is None:
+        _landmarker = vision.HandLandmarker.create_from_options(
+            vision.HandLandmarkerOptions(
+                base_options=mp_python.BaseOptions(model_asset_path=MODEL_PATH),
+                running_mode=vision.RunningMode.IMAGE,
+                num_hands=1,
+                min_hand_detection_confidence=0.6,
+            )
+        )
+    return _landmarker
 
 
 @api_view(['POST'])
@@ -48,11 +56,16 @@ def detect_hand(request):
     if img is None:
         return Response({'error': 'Bad image'}, status=400)
 
+    h, w = img.shape[:2]
+    scale = MAX_SIDE / max(h, w)
+    if scale < 1:
+        img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+
     rgb = np.ascontiguousarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
 
     with _lock:
-        result = _landmarker.detect(mp_image)
+        result = get_landmarker().detect(mp_image)
 
     if not result.handedness:
         return Response({'detected': False})

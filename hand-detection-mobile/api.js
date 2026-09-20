@@ -1,9 +1,8 @@
 import axios from "axios";
 
-// Real phone: your PC's LAN IP. Android emulator: 10.0.2.2
-export const BASE_URL = "http://192.168.1.7:8000";
+export const BASE_URL = "https://handdetectionappbackend.onrender.com";
 
-const api = axios.create({ baseURL: BASE_URL, timeout: 15000 });
+const api = axios.create({ baseURL: BASE_URL, timeout: 30000 });
 
 export const getDetections = async () => (await api.get("/api/detections/")).data;
 
@@ -15,7 +14,7 @@ export async function detectHand(photoUri) {
   form.append("image", { uri: photoUri, name: "frame.jpg", type: "image/jpeg" });
   const { data } = await api.post("/api/detect/", form, {
     headers: { "Content-Type": "multipart/form-data" },
-    timeout: 10000,
+    timeout: 20000,
   });
   return data;
 }
