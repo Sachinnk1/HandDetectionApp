@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const BASE_URL = "https://handdetectionappbackend.onrender.com";
 
-const api = axios.create({ baseURL: BASE_URL, timeout: 30000 });
+const api = axios.create({ baseURL: BASE_URL, timeout: 60000 });
 
 export const getDetections = async () => (await api.get("/api/detections/")).data;
 
@@ -14,7 +14,7 @@ export async function detectHand(photoUri) {
   form.append("image", { uri: photoUri, name: "frame.jpg", type: "image/jpeg" });
   const { data } = await api.post("/api/detect/", form, {
     headers: { "Content-Type": "multipart/form-data" },
-    timeout: 20000,
+    timeout: 90000,
   });
   return data;
 }
