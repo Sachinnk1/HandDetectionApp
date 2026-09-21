@@ -4,7 +4,7 @@ import {
   HandLandmarker,
 } from '@mediapipe/tasks-vision';
 
-const API_URL = 'http://127.0.0.1:8000/api/detections/';
+const API_URL = 'https://handdetection-docker.onrender.com/api/detections/';
 
 function HandDetector() {
   const videoRef = useRef(null);
